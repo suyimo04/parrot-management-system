@@ -48,6 +48,7 @@ prompt.md
 UI/code_artifact.tsx
 wd/
 portmant/
+开发任务拆分清单.md
 
 # IDE 和编辑器配置
 .idea/
@@ -70,3 +71,6 @@ desktop.ini
 ~$*.pptx
 ~$*.xls
 ~$*.xlsx
+
+#gitignore
+.gitignore
