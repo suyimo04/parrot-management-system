@@ -1,0 +1,115 @@
+@import './variables.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  color: var(--pm-text);
+  background: var(--pm-bg);
+  font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+}
+
+a {
+  color: var(--pm-primary);
+  text-decoration: none;
+}
+
+.page-wrap {
+  padding: 18px;
+}
+
+.filter-card,
+.table-card,
+.form-card,
+.panel-card {
+  background: #fff;
+  border: 1px solid var(--pm-border);
+  border-radius: var(--pm-card-radius);
+  box-shadow: var(--pm-shadow);
+}
+
+.filter-card {
+  margin-bottom: 14px;
+  padding: 16px;
+}
+
+.table-card {
+  padding: 16px;
+}
+
+.page-title {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.muted {
+  color: var(--pm-text-light);
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--pm-primary);
+  --el-button-border-color: var(--pm-primary);
+  --el-button-hover-bg-color: var(--pm-primary-dark);
+  --el-button-hover-border-color: var(--pm-primary-dark);
+  --el-button-active-bg-color: var(--pm-primary-dark);
+  --el-button-active-border-color: var(--pm-primary-dark);
+}
+
+.el-link.el-link--primary,
+.el-menu-item.is-active,
+.el-sub-menu.is-active > .el-sub-menu__title {
+  color: var(--pm-primary);
+}
+
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--pm-primary) inset;
+}
+
+.el-card {
+  border-radius: var(--pm-card-radius);
+}
+
+.el-table {
+  --el-table-header-bg-color: #F8FAFC;
+  --el-table-header-text-color: var(--pm-text);
+}
+
+.app-empty {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pm-text-light);
+}
+
+@media (max-width: 768px) {
+  .page-wrap {
+    padding: 12px;
+  }
+
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

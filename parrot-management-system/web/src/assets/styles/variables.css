@@ -1,0 +1,15 @@
+:root {
+  --pm-primary: #16A085;
+  --pm-primary-dark: #138A72;
+  --pm-secondary: #2ECC71;
+  --pm-emphasis: #F4B400;
+  --pm-bg: #F6F8FA;
+  --pm-text: #24323F;
+  --pm-text-light: #6B7A90;
+  --pm-border: #E5EAF0;
+  --pm-danger: #E74C3C;
+  --pm-success: #27AE60;
+  --pm-warning: #F39C12;
+  --pm-card-radius: 10px;
+  --pm-shadow: 0 8px 24px rgba(36, 50, 63, 0.06);
+}
