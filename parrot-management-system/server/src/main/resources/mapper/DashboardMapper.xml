@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.parrot.mapper.DashboardMapper">
+
+    <!-- 按品种统计鹦鹉数量，左连接品种表是为了直接拿到中文品种名。 -->
+    <select id="selectSpeciesDistribution" resultType="com.parrot.vo.ChartItemVO">
+        SELECT
+            COALESCE(ps.name, '未分类') AS name,
+            COUNT(p.id) AS value
+        FROM parrot p
+        LEFT JOIN parrot_species ps ON p.species_id = ps.id
+        GROUP BY ps.name
+        ORDER BY value DESC
+    </select>
+
+    <!-- 看板饼图只需要健康状态和值，直接按档案表状态分组。 -->
+    <select id="selectHealthStatusDistribution" resultType="com.parrot.vo.ChartItemVO">
+        SELECT
+            COALESCE(health_status, '未知') AS name,
+            COUNT(id) AS value
+        FROM parrot
+        GROUP BY health_status
+        ORDER BY value DESC
+    </select>
+
+    <!-- 预约趋势按预约日期聚合，缺失日期由 Service 补 0。 -->
+    <select id="selectAppointmentTrend" resultType="com.parrot.vo.ChartItemVO">
+        SELECT
+            DATE_FORMAT(appointment_date, '%Y-%m-%d') AS name,
+            COUNT(id) AS value
+        FROM appointment
+        WHERE appointment_date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY appointment_date
+        ORDER BY appointment_date ASC
+    </select>
+</mapper>
