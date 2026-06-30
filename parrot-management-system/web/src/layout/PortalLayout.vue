@@ -65,8 +65,10 @@ function logout() {
   align-items: center;
   gap: 26px;
   padding: 0 32px;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.97);
   border-bottom: 1px solid var(--pm-border);
+  box-shadow: 0 4px 16px rgba(36, 50, 63, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .portal-logo {
@@ -80,6 +82,7 @@ function logout() {
 
 .portal-logo .el-icon {
   color: var(--pm-primary);
+  font-size: 22px;
 }
 
 .portal-nav {
@@ -90,7 +93,14 @@ function logout() {
 }
 
 .portal-nav a {
+  position: relative;
+  padding: 22px 0 20px;
   color: var(--pm-text-light);
+  transition: color 0.16s ease;
+}
+
+.portal-nav a:hover {
+  color: var(--pm-primary);
 }
 
 .portal-nav a.router-link-active {
@@ -98,10 +108,22 @@ function logout() {
   font-weight: 700;
 }
 
+.portal-nav a.router-link-active::after {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 13px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--pm-primary);
+  content: "";
+}
+
 .portal-user {
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
 }
 
 .portal-main {
@@ -127,7 +149,16 @@ function logout() {
   .portal-nav {
     order: 3;
     width: 100%;
+    gap: 16px;
     overflow-x: auto;
+  }
+
+  .portal-nav a {
+    padding: 4px 0 8px;
+  }
+
+  .portal-nav a.router-link-active::after {
+    bottom: 0;
   }
 }
 </style>

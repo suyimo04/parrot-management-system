@@ -21,7 +21,7 @@ defineProps({
 
 <style scoped>
 .base-card {
-  padding: 16px;
+  padding: 18px;
   background: #fff;
   border: 1px solid var(--pm-border);
   border-radius: var(--pm-card-radius);
@@ -37,8 +37,24 @@ defineProps({
 }
 
 .base-card__head h3 {
+  position: relative;
   margin: 0;
+  padding-left: 10px;
   font-size: 16px;
+  font-weight: 700;
+  color: var(--pm-text);
+}
+
+/* 小卡片标题也带绿色标记，答辩演示时页面层次更清楚 */
+.base-card__head h3::before {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 4px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--pm-primary);
+  content: "";
 }
 
 .base-card__extra {

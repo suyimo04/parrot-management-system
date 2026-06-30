@@ -115,8 +115,9 @@ async function submit() {
   max-width: 100%;
   padding: 28px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: var(--pm-card-radius);
+  box-shadow: var(--pm-shadow-strong);
 }
 
 .register-card {

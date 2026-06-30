@@ -65,7 +65,7 @@
         </div>
         <div class="admin-header__right">
           <el-tag type="success" effect="light">{{ roleText }}</el-tag>
-          <span>{{ userStore.showName }}</span>
+          <span class="admin-user">{{ userStore.showName }}</span>
           <el-button text :icon="SwitchButton" @click="logout">退出</el-button>
         </div>
       </header>
@@ -112,12 +112,14 @@ function logout() {
 }
 
 .admin-sidebar {
-  width: 238px;
+  width: 240px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: #24323F;
-  transition: width 0.2s ease;
+  background: var(--pm-sidebar);
+  box-shadow: 10px 0 28px rgba(26, 37, 47, 0.14);
+  transition: width 0.24s ease;
+  z-index: 2;
 }
 
 .admin-sidebar.collapsed {
@@ -134,15 +136,48 @@ function logout() {
   font-size: 17px;
   font-weight: 700;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0;
 }
 
 .admin-logo .el-icon {
   color: var(--pm-secondary);
+  font-size: 22px;
 }
 
 .admin-menu {
   flex: 1;
   border-right: 0;
+  padding: 12px 0;
+  overflow-y: auto;
+}
+
+/* 后台菜单沿用参考稿的暗色层级，鼠标经过时给一点绿色反馈 */
+.admin-menu :deep(.el-menu-item),
+.admin-menu :deep(.el-sub-menu__title) {
+  height: 44px;
+  margin: 2px 8px;
+  border-radius: 4px;
+}
+
+.admin-menu :deep(.el-menu-item:hover),
+.admin-menu :deep(.el-sub-menu__title:hover) {
+  color: #fff !important;
+  background: rgba(22, 160, 133, 0.78) !important;
+}
+
+.admin-menu :deep(.el-menu-item.is-active) {
+  color: #fff !important;
+  background: var(--pm-primary) !important;
+}
+
+.admin-menu :deep(.el-sub-menu .el-menu) {
+  background: var(--pm-sidebar-deep) !important;
+}
+
+.admin-menu :deep(.el-sub-menu .el-menu-item) {
+  margin: 0;
+  padding-left: 48px !important;
+  border-radius: 0;
 }
 
 .admin-main {
@@ -160,6 +195,8 @@ function logout() {
   padding: 0 18px;
   background: #fff;
   border-bottom: 1px solid var(--pm-border);
+  box-shadow: 0 2px 8px rgba(36, 50, 63, 0.04);
+  z-index: 1;
 }
 
 .admin-header__left,
@@ -169,10 +206,21 @@ function logout() {
   gap: 12px;
 }
 
+.admin-header__left :deep(.el-button) {
+  width: 32px;
+  height: 32px;
+}
+
+.admin-user {
+  color: var(--pm-text);
+  font-weight: 500;
+}
+
 .admin-content {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  background: var(--pm-bg);
 }
 
 @media (max-width: 900px) {

@@ -80,11 +80,11 @@ function closeAll() {
 <style scoped>
 .tags-view {
   position: relative;
-  height: 38px;
+  height: 40px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 12px;
+  padding: 0 14px;
   overflow-x: auto;
   background: #fff;
   border-bottom: 1px solid var(--pm-border);
@@ -98,9 +98,17 @@ function closeAll() {
   padding: 0 10px;
   white-space: nowrap;
   border: 1px solid var(--pm-border);
-  border-radius: 6px;
+  border-radius: 4px;
+  background: #fff;
   color: var(--pm-text-light);
   cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.tags-view__item:hover {
+  color: var(--pm-primary);
+  border-color: rgba(22, 160, 133, 0.35);
+  background: #F8FBFA;
 }
 
 .tags-view__item.active {
@@ -116,7 +124,7 @@ function closeAll() {
   padding: 4px 0;
   background: #fff;
   border: 1px solid var(--pm-border);
-  border-radius: 6px;
+  border-radius: 4px;
   box-shadow: var(--pm-shadow);
 }
 

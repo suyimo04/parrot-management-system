@@ -17,6 +17,7 @@ body {
   background: var(--pm-bg);
   font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
   font-size: 14px;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -25,7 +26,7 @@ a {
 }
 
 .page-wrap {
-  padding: 18px;
+  padding: 20px;
 }
 
 .filter-card,
@@ -39,18 +40,34 @@ a {
 }
 
 .filter-card {
-  margin-bottom: 14px;
-  padding: 16px;
+  margin-bottom: 16px;
+  padding: 16px 18px 4px;
+  background: #fff;
 }
 
 .table-card {
-  padding: 16px;
+  padding: 16px 18px;
 }
 
 .page-title {
-  margin: 0 0 14px;
+  position: relative;
+  margin: 0 0 16px;
+  padding-left: 10px;
+  color: var(--pm-text);
   font-size: 20px;
   font-weight: 700;
+}
+
+/* 标题左侧压一条色块，和参考稿里的模块标题保持一致 */
+.page-title::before {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--pm-primary);
+  content: "";
 }
 
 .toolbar {
@@ -58,7 +75,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .muted {
@@ -74,10 +91,30 @@ a {
   --el-button-active-border-color: var(--pm-primary-dark);
 }
 
+.el-button {
+  --el-button-border-radius: 4px;
+  font-weight: 500;
+}
+
+.el-button.is-text:not(.is-disabled):hover {
+  color: var(--pm-primary);
+  background: rgba(22, 160, 133, 0.08);
+}
+
 .el-link.el-link--primary,
 .el-menu-item.is-active,
 .el-sub-menu.is-active > .el-sub-menu__title {
   color: var(--pm-primary);
+}
+
+.el-form-item__label {
+  color: var(--pm-text-light);
+}
+
+.el-input__wrapper,
+.el-select__wrapper,
+.el-textarea__inner {
+  border-radius: 4px;
 }
 
 .el-input__wrapper.is-focus,
@@ -93,6 +130,21 @@ a {
 .el-table {
   --el-table-header-bg-color: #F8FAFC;
   --el-table-header-text-color: var(--pm-text);
+  --el-table-row-hover-bg-color: #F8FBFA;
+  color: var(--pm-text);
+  border-radius: var(--pm-card-radius);
+}
+
+.el-table th.el-table__cell {
+  font-weight: 700;
+}
+
+.el-dialog {
+  border-radius: var(--pm-card-radius);
+}
+
+.el-pagination.is-background .el-pager li.is-active {
+  background: var(--pm-primary);
 }
 
 .app-empty {

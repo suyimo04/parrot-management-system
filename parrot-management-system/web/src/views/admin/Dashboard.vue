@@ -64,7 +64,7 @@ const cards = computed(() => [
   { title: '客户数量', value: stats.customerCount, icon: 'User', type: 'success' },
   { title: '待处理预约', value: stats.pendingAppointmentCount, icon: 'Calendar', type: 'warning' },
   { title: '健康异常数', value: stats.abnormalHealthCount, icon: 'Warning', type: 'danger' },
-  { title: '今日喂养记录', value: stats.todayFeedingCount, icon: 'Food', type: 'primary' }
+  { title: '今日喂养记录', value: stats.todayFeedingCount, icon: 'Food', type: 'info' }
 ])
 
 async function loadData() {
@@ -147,8 +147,8 @@ onBeforeUnmount(() => {
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .stat-card {
@@ -159,9 +159,9 @@ onBeforeUnmount(() => {
 }
 
 .stat-card .el-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--pm-card-radius);
   font-size: 22px;
 }
 
@@ -185,6 +185,11 @@ onBeforeUnmount(() => {
   background: rgba(231, 76, 60, 0.1);
 }
 
+.stat-card .info {
+  color: var(--pm-blue);
+  background: rgba(52, 152, 219, 0.1);
+}
+
 .stat-card p {
   margin: 0 0 4px;
   color: var(--pm-text-light);
@@ -197,7 +202,7 @@ onBeforeUnmount(() => {
 .chart-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 16px;
 }
 
 .wide-card {
