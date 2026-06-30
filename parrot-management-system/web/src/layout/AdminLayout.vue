@@ -14,42 +14,43 @@
         text-color="#C7D0DD"
         active-text-color="#2ECC71"
       >
-        <el-menu-item index="/admin/dashboard">
+        <el-menu-item v-if="canUse('dashboard')" index="/admin/dashboard">
           <el-icon><DataBoard /></el-icon>
           <template #title>首页看板</template>
         </el-menu-item>
-        <el-sub-menu index="parrot">
+        <el-sub-menu v-if="canUse('parrot:list') || canUse('parrot:species')" index="parrot">
           <template #title>
             <el-icon><Star /></el-icon>
             <span>鹦鹉管理</span>
           </template>
-          <el-menu-item index="/admin/parrot/list">鹦鹉档案管理</el-menu-item>
-          <el-menu-item index="/admin/parrot/species">品种管理</el-menu-item>
+          <el-menu-item v-if="canUse('parrot:list')" index="/admin/parrot/list">鹦鹉档案管理</el-menu-item>
+          <el-menu-item v-if="canUse('parrot:species')" index="/admin/parrot/species">品种管理</el-menu-item>
         </el-sub-menu>
-        <el-sub-menu index="care">
+        <el-sub-menu v-if="canUse('care:health') || canUse('care:feeding') || canUse('care:training')" index="care">
           <template #title>
             <el-icon><FirstAidKit /></el-icon>
             <span>养护管理</span>
           </template>
-          <el-menu-item index="/admin/health">健康记录管理</el-menu-item>
-          <el-menu-item index="/admin/feeding">喂养记录管理</el-menu-item>
-          <el-menu-item index="/admin/training">训练记录管理</el-menu-item>
+          <el-menu-item v-if="canUse('care:health')" index="/admin/health">健康记录管理</el-menu-item>
+          <el-menu-item v-if="canUse('care:feeding')" index="/admin/feeding">喂养记录管理</el-menu-item>
+          <el-menu-item v-if="canUse('care:training')" index="/admin/training">训练记录管理</el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="/admin/appointment">
+        <el-menu-item v-if="canUse('appointment')" index="/admin/appointment">
           <el-icon><Calendar /></el-icon>
           <template #title>预约咨询管理</template>
         </el-menu-item>
-        <el-menu-item index="/admin/notice">
+        <el-menu-item v-if="canUse('notice')" index="/admin/notice">
           <el-icon><Document /></el-icon>
           <template #title>公告知识管理</template>
         </el-menu-item>
-        <el-sub-menu v-if="isAdmin(userStore.role)" index="system">
+        <el-sub-menu v-if="canUse('system:user') || canUse('system:login-log') || canUse('system:menu')" index="system">
           <template #title>
             <el-icon><Setting /></el-icon>
             <span>系统管理</span>
           </template>
-          <el-menu-item index="/admin/user">用户管理</el-menu-item>
-          <el-menu-item index="/admin/login-log">登录日志</el-menu-item>
+          <el-menu-item v-if="canUse('system:user')" index="/admin/user">用户管理</el-menu-item>
+          <el-menu-item v-if="canUse('system:login-log')" index="/admin/login-log">登录日志</el-menu-item>
+          <el-menu-item v-if="canUse('system:menu')" index="/admin/menu">菜单管理</el-menu-item>
         </el-sub-menu>
       </el-menu>
     </aside>
@@ -84,7 +85,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { DataBoard, FirstAidKit, Fold, Star, Calendar, Document, Setting, SwitchButton } from '@element-plus/icons-vue'
 import TagsView from './TagsView.vue'
 import { useUserStore } from '../store/user'
-import { isAdmin } from '../utils/auth'
+import { hasMenu } from '../utils/auth'
 
 const route = useRoute()
 const router = useRouter()
@@ -100,6 +101,10 @@ const roleText = computed(() => {
 function logout() {
   userStore.logout()
   router.push('/login')
+}
+
+function canUse(code) {
+  return hasMenu(userStore, code)
 }
 </script>
 

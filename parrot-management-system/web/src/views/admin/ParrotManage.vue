@@ -38,7 +38,7 @@
       @size-change="changeSize"
     >
       <template #toolbar>
-        <el-button type="primary" :icon="Plus" @click="openAdd">新增鹦鹉</el-button>
+        <el-button v-if="canDo('parrot:list:add')" type="primary" :icon="Plus" @click="openAdd">新增鹦鹉</el-button>
       </template>
       <el-table v-loading="loading" :data="list" row-key="id">
         <el-table-column label="图片" width="90">
@@ -59,10 +59,16 @@
         <el-table-column label="公开状态" min-width="100">
           <template #default="{ row }"><StatusTag :text="row.isPublic === 1 ? '公开' : '不公开'" /></template>
         </el-table-column>
-        <el-table-column label="操作" width="170" fixed="right">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button size="small" :icon="Edit" @click="openEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" :icon="Delete" @click="remove(row)">删除</el-button>
+            <div class="table-actions">
+              <el-tooltip v-if="canDo('parrot:list:edit')" content="编辑" placement="top">
+                <el-button circle size="small" :icon="Edit" @click="openEdit(row)" />
+              </el-tooltip>
+              <el-tooltip v-if="canDo('parrot:list:delete')" content="删除" placement="top">
+                <el-button circle size="small" type="danger" :icon="Delete" @click="remove(row)" />
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -137,14 +143,14 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="saving" @click="submit">保存</el-button>
+        <el-button v-if="canSave" type="primary" :loading="saving" @click="submit">保存</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Edit, Plus, Search } from '@element-plus/icons-vue'
 import PageTable from '../../components/PageTable.vue'
@@ -152,7 +158,10 @@ import StatusTag from '../../components/StatusTag.vue'
 import ImageUpload from '../../components/ImageUpload.vue'
 import { addParrot, deleteParrot, getParrotPage, updateParrot } from '../../api/parrot'
 import { getSpeciesList } from '../../api/species'
+import { useUserStore } from '../../store/user'
+import { hasAction } from '../../utils/auth'
 
+const userStore = useUserStore()
 const healthOptions = ['正常', '观察中', '治疗中', '已预约', '已停用']
 const loading = ref(false)
 const saving = ref(false)
@@ -179,6 +188,12 @@ const rules = {
   healthStatus: [{ required: true, message: '请选择健康状态', trigger: 'change' }],
   currentStatus: [{ required: true, message: '请选择当前状态', trigger: 'change' }],
   isPublic: [{ required: true, message: '请选择公开状态', trigger: 'change' }]
+}
+
+const canSave = computed(() => form.id ? canDo('parrot:list:edit') : canDo('parrot:list:add'))
+
+function canDo(code) {
+  return hasAction(userStore, code)
 }
 
 function defaultForm() {

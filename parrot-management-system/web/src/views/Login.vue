@@ -34,8 +34,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Lock, Star, User } from '@element-plus/icons-vue'
 import { login } from '../api/auth'
+import { getCurrentMenus } from '../api/menu'
 import { useUserStore } from '../store/user'
-import { homeByRole } from '../utils/auth'
+import { canVisitAdmin, homeByRole } from '../utils/auth'
 
 const router = useRouter()
 const route = useRoute()
@@ -59,6 +60,10 @@ async function submit() {
   try {
     const data = await login(form)
     userStore.setUser(data)
+    if (canVisitAdmin(data.role)) {
+      const menuData = await getCurrentMenus()
+      userStore.setMenus(menuData.codes || [])
+    }
     ElMessage.success('登录成功')
     const target = route.query.redirect || homeByRole(data.role)
     router.push(target)

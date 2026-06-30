@@ -22,7 +22,9 @@ export const useUserStore = defineStore('user', {
     phone: '',
     email: '',
     role: '',
-    ...readLocalUser()
+    menuCodes: [],
+    ...readLocalUser(),
+    menuLoaded: false
   }),
   getters: {
     isLogin: (state) => Boolean(state.token),
@@ -37,6 +39,12 @@ export const useUserStore = defineStore('user', {
       this.phone = info.phone || ''
       this.email = info.email || ''
       this.role = info.role || ''
+      this.menuCodes = info.menuCodes || this.menuCodes || []
+      this.saveLocal()
+    },
+    setMenus(codes) {
+      this.menuCodes = codes || []
+      this.menuLoaded = true
       this.saveLocal()
     },
     updateProfile(info) {
@@ -53,7 +61,8 @@ export const useUserStore = defineStore('user', {
         realName: this.realName,
         phone: this.phone,
         email: this.email,
-        role: this.role
+        role: this.role,
+        menuCodes: this.menuCodes
       }))
     },
     logout() {
@@ -64,6 +73,8 @@ export const useUserStore = defineStore('user', {
       this.phone = ''
       this.email = ''
       this.role = ''
+      this.menuCodes = []
+      this.menuLoaded = false
       localStorage.removeItem(USER_KEY)
     }
   }

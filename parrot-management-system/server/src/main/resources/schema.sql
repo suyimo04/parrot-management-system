@@ -9,6 +9,9 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS login_log;
 DROP TABLE IF EXISTS file_resource;
+DROP TABLE IF EXISTS sys_user_menu;
+DROP TABLE IF EXISTS sys_role_menu;
+DROP TABLE IF EXISTS sys_menu;
 DROP TABLE IF EXISTS notice;
 DROP TABLE IF EXISTS appointment;
 DROP TABLE IF EXISTS training_record;
@@ -37,6 +40,44 @@ CREATE TABLE sys_user (
   CONSTRAINT chk_user_role CHECK (role IN ('ADMIN', 'KEEPER', 'CUSTOMER')),
   CONSTRAINT chk_user_status CHECK (status IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+CREATE TABLE sys_menu (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '菜单ID',
+  parent_id BIGINT NOT NULL DEFAULT 0 COMMENT '父级菜单ID',
+  menu_code VARCHAR(80) NOT NULL COMMENT '菜单编码',
+  menu_name VARCHAR(80) NOT NULL COMMENT '菜单名称',
+  menu_type VARCHAR(20) NOT NULL COMMENT 'DIR目录 MENU菜单 BUTTON按钮',
+  path VARCHAR(200) DEFAULT NULL COMMENT '前端路由地址',
+  api_pattern VARCHAR(500) DEFAULT NULL COMMENT '后端接口匹配规则，多个用逗号分隔',
+  icon VARCHAR(80) DEFAULT NULL COMMENT '前端图标',
+  sort_no INT NOT NULL DEFAULT 0 COMMENT '排序号',
+  status TINYINT NOT NULL DEFAULT 1 COMMENT '1启用 0禁用',
+  UNIQUE KEY uk_menu_code (menu_code),
+  KEY idx_parent_id (parent_id),
+  KEY idx_status (status),
+  CONSTRAINT chk_menu_type CHECK (menu_type IN ('DIR', 'MENU', 'BUTTON')),
+  CONSTRAINT chk_menu_status CHECK (status IN (0, 1))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统菜单表';
+
+CREATE TABLE sys_role_menu (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '关系ID',
+  role VARCHAR(20) NOT NULL COMMENT '身份类型',
+  menu_id BIGINT NOT NULL COMMENT '菜单ID',
+  UNIQUE KEY uk_role_menu (role, menu_id),
+  KEY idx_menu_id (menu_id),
+  CONSTRAINT fk_role_menu_menu FOREIGN KEY (menu_id) REFERENCES sys_menu(id),
+  CONSTRAINT chk_role_menu_role CHECK (role IN ('ADMIN', 'KEEPER', 'CUSTOMER'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色菜单关系表';
+
+CREATE TABLE sys_user_menu (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '关系ID',
+  user_id BIGINT NOT NULL COMMENT '用户ID',
+  menu_id BIGINT NOT NULL COMMENT '菜单ID',
+  UNIQUE KEY uk_user_menu (user_id, menu_id),
+  KEY idx_menu_id (menu_id),
+  CONSTRAINT fk_user_menu_user FOREIGN KEY (user_id) REFERENCES sys_user(id),
+  CONSTRAINT fk_user_menu_menu FOREIGN KEY (menu_id) REFERENCES sys_menu(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户菜单关系表';
 
 CREATE TABLE parrot_species (
   id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '品种ID',

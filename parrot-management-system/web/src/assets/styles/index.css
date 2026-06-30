@@ -139,6 +139,41 @@ a {
   font-weight: 700;
 }
 
+.table-actions {
+  width: 100%;
+  min-width: 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-actions--single {
+  justify-content: center;
+}
+
+.table-actions--wide {
+  max-width: 180px;
+}
+
+.table-actions .el-button {
+  width: 30px;
+  min-width: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+
+.table-actions .el-button + .el-button {
+  margin-left: 0;
+}
+
+.table-actions .el-icon {
+  font-size: 14px;
+}
+
 .el-dialog {
   border-radius: var(--pm-card-radius);
 }
@@ -163,5 +198,9 @@ a {
   .toolbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .table-actions {
+    justify-content: flex-start;
   }
 }

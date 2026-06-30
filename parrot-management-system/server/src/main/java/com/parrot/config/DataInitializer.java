@@ -7,6 +7,8 @@ import com.parrot.entity.HealthRecord;
 import com.parrot.entity.Notice;
 import com.parrot.entity.Parrot;
 import com.parrot.entity.ParrotSpecies;
+import com.parrot.entity.SysMenu;
+import com.parrot.entity.SysRoleMenu;
 import com.parrot.entity.SysUser;
 import com.parrot.entity.TrainingRecord;
 import com.parrot.mapper.AppointmentMapper;
@@ -15,6 +17,8 @@ import com.parrot.mapper.HealthRecordMapper;
 import com.parrot.mapper.NoticeMapper;
 import com.parrot.mapper.ParrotMapper;
 import com.parrot.mapper.ParrotSpeciesMapper;
+import com.parrot.mapper.SysMenuMapper;
+import com.parrot.mapper.SysRoleMenuMapper;
 import com.parrot.mapper.SysUserMapper;
 import com.parrot.mapper.TrainingRecordMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +43,8 @@ public class DataInitializer implements CommandLineRunner {
     private final ParrotSpeciesMapper speciesMapper;
     private final ParrotMapper parrotMapper;
     private final NoticeMapper noticeMapper;
+    private final SysMenuMapper menuMapper;
+    private final SysRoleMenuMapper roleMenuMapper;
     private final HealthRecordMapper healthRecordMapper;
     private final FeedingRecordMapper feedingRecordMapper;
     private final TrainingRecordMapper trainingRecordMapper;
@@ -49,6 +55,8 @@ public class DataInitializer implements CommandLineRunner {
                            ParrotSpeciesMapper speciesMapper,
                            ParrotMapper parrotMapper,
                            NoticeMapper noticeMapper,
+                           SysMenuMapper menuMapper,
+                           SysRoleMenuMapper roleMenuMapper,
                            HealthRecordMapper healthRecordMapper,
                            FeedingRecordMapper feedingRecordMapper,
                            TrainingRecordMapper trainingRecordMapper,
@@ -58,6 +66,8 @@ public class DataInitializer implements CommandLineRunner {
         this.speciesMapper = speciesMapper;
         this.parrotMapper = parrotMapper;
         this.noticeMapper = noticeMapper;
+        this.menuMapper = menuMapper;
+        this.roleMenuMapper = roleMenuMapper;
         this.healthRecordMapper = healthRecordMapper;
         this.feedingRecordMapper = feedingRecordMapper;
         this.trainingRecordMapper = trainingRecordMapper;
@@ -69,6 +79,7 @@ public class DataInitializer implements CommandLineRunner {
         try {
             Long count = sysUserMapper.selectCount(new LambdaQueryWrapper<>());
             if (count != null && count > 0) {
+                initSystemMenus();
                 initBusinessDemoData();
                 initDemoAppointments();
                 return;
@@ -78,6 +89,7 @@ public class DataInitializer implements CommandLineRunner {
             addUser("keeper", "饲养员", "KEEPER");
             addUser("customer", "演示客户", "CUSTOMER");
             log.info("默认演示账号初始化完成：admin/keeper/customer，密码均为 admin123");
+            initSystemMenus();
             initBusinessDemoData();
             initDemoAppointments();
         } catch (Exception e) {
@@ -94,6 +106,159 @@ public class DataInitializer implements CommandLineRunner {
         user.setRole(role);
         user.setStatus(1);
         sysUserMapper.insert(user);
+    }
+
+    private void initSystemMenus() {
+        addMenuIfAbsent(1L, 0L, "dashboard", "首页看板", "MENU", "/admin/dashboard",
+                "GET /api/admin/dashboard/**", "DataBoard", 10);
+        addMenuIfAbsent(2L, 0L, "parrot", "鹦鹉管理", "DIR", null,
+                null, "Star", 20);
+        addMenuIfAbsent(3L, 2L, "parrot:list", "鹦鹉档案管理", "MENU", "/admin/parrot/list",
+                "GET /api/admin/parrot/page,GET /api/admin/species/list", "Star", 21);
+        addMenuIfAbsent(15L, 3L, "parrot:list:add", "新增鹦鹉", "BUTTON", null,
+                "POST /api/admin/parrot", null, 211);
+        addMenuIfAbsent(16L, 3L, "parrot:list:edit", "编辑鹦鹉", "BUTTON", null,
+                "PUT /api/admin/parrot/**", null, 212);
+        addMenuIfAbsent(17L, 3L, "parrot:list:delete", "删除鹦鹉", "BUTTON", null,
+                "DELETE /api/admin/parrot/**", null, 213);
+        addMenuIfAbsent(4L, 2L, "parrot:species", "品种管理", "MENU", "/admin/parrot/species",
+                "GET /api/admin/species/page,GET /api/admin/species/list", "Collection", 22);
+        addMenuIfAbsent(18L, 4L, "parrot:species:add", "新增品种", "BUTTON", null,
+                "POST /api/admin/species", null, 221);
+        addMenuIfAbsent(19L, 4L, "parrot:species:edit", "编辑品种", "BUTTON", null,
+                "PUT /api/admin/species/**", null, 222);
+        addMenuIfAbsent(20L, 4L, "parrot:species:delete", "删除品种", "BUTTON", null,
+                "DELETE /api/admin/species/**", null, 223);
+        addMenuIfAbsent(5L, 0L, "care", "养护管理", "DIR", null,
+                null, "FirstAidKit", 30);
+        addMenuIfAbsent(6L, 5L, "care:health", "健康记录管理", "MENU", "/admin/health",
+                "GET /api/admin/health-record/page,GET /api/admin/parrot/page", "FirstAidKit", 31);
+        addMenuIfAbsent(21L, 6L, "care:health:add", "新增健康记录", "BUTTON", null,
+                "POST /api/admin/health-record", null, 311);
+        addMenuIfAbsent(22L, 6L, "care:health:edit", "编辑健康记录", "BUTTON", null,
+                "PUT /api/admin/health-record/**", null, 312);
+        addMenuIfAbsent(23L, 6L, "care:health:delete", "删除健康记录", "BUTTON", null,
+                "DELETE /api/admin/health-record/**", null, 313);
+        addMenuIfAbsent(7L, 5L, "care:feeding", "喂养记录管理", "MENU", "/admin/feeding",
+                "GET /api/admin/feeding-record/page,GET /api/admin/parrot/page", "Bowl", 32);
+        addMenuIfAbsent(24L, 7L, "care:feeding:add", "新增喂养记录", "BUTTON", null,
+                "POST /api/admin/feeding-record", null, 321);
+        addMenuIfAbsent(25L, 7L, "care:feeding:edit", "编辑喂养记录", "BUTTON", null,
+                "PUT /api/admin/feeding-record/**", null, 322);
+        addMenuIfAbsent(26L, 7L, "care:feeding:delete", "删除喂养记录", "BUTTON", null,
+                "DELETE /api/admin/feeding-record/**", null, 323);
+        addMenuIfAbsent(8L, 5L, "care:training", "训练记录管理", "MENU", "/admin/training",
+                "GET /api/admin/training-record/page,GET /api/admin/parrot/page", "Medal", 33);
+        addMenuIfAbsent(27L, 8L, "care:training:add", "新增训练记录", "BUTTON", null,
+                "POST /api/admin/training-record", null, 331);
+        addMenuIfAbsent(28L, 8L, "care:training:edit", "编辑训练记录", "BUTTON", null,
+                "PUT /api/admin/training-record/**", null, 332);
+        addMenuIfAbsent(29L, 8L, "care:training:delete", "删除训练记录", "BUTTON", null,
+                "DELETE /api/admin/training-record/**", null, 333);
+        addMenuIfAbsent(9L, 0L, "appointment", "预约咨询管理", "MENU", "/admin/appointment",
+                "GET /api/admin/appointment/page,GET /api/admin/parrot/page", "Calendar", 40);
+        addMenuIfAbsent(30L, 9L, "appointment:confirm", "确认预约", "BUTTON", null,
+                "PUT /api/admin/appointment/*/confirm", null, 401);
+        addMenuIfAbsent(31L, 9L, "appointment:reject", "驳回预约", "BUTTON", null,
+                "PUT /api/admin/appointment/*/reject", null, 402);
+        addMenuIfAbsent(32L, 9L, "appointment:finish", "完成预约", "BUTTON", null,
+                "PUT /api/admin/appointment/*/complete,PUT /api/admin/appointment/*/finish", null, 403);
+        addMenuIfAbsent(33L, 9L, "appointment:cancel", "取消预约", "BUTTON", null,
+                "PUT /api/admin/appointment/*/cancel", null, 404);
+        addMenuIfAbsent(10L, 0L, "notice", "公告知识管理", "MENU", "/admin/notice",
+                "GET /api/admin/notice/page", "Document", 50);
+        addMenuIfAbsent(34L, 10L, "notice:add", "新增公告", "BUTTON", null,
+                "POST /api/admin/notice", null, 501);
+        addMenuIfAbsent(35L, 10L, "notice:edit", "编辑公告", "BUTTON", null,
+                "PUT /api/admin/notice/**", null, 502);
+        addMenuIfAbsent(36L, 10L, "notice:delete", "删除公告", "BUTTON", null,
+                "DELETE /api/admin/notice/**", null, 503);
+        addMenuIfAbsent(11L, 0L, "system", "系统管理", "DIR", null,
+                null, "Setting", 90);
+        addMenuIfAbsent(12L, 11L, "system:user", "用户管理", "MENU", "/admin/user",
+                "GET /api/admin/user/page", "User", 91);
+        addMenuIfAbsent(37L, 12L, "system:user:add", "新增用户", "BUTTON", null,
+                "POST /api/admin/user", null, 911);
+        addMenuIfAbsent(38L, 12L, "system:user:edit", "编辑用户", "BUTTON", null,
+                "PUT /api/admin/user/*", null, 912);
+        addMenuIfAbsent(39L, 12L, "system:user:disable", "禁用用户", "BUTTON", null,
+                "DELETE /api/admin/user/**", null, 913);
+        addMenuIfAbsent(40L, 12L, "system:user:reset", "重置密码", "BUTTON", null,
+                "PUT /api/admin/user/*/reset-password", null, 914);
+        addMenuIfAbsent(13L, 11L, "system:login-log", "登录日志", "MENU", "/admin/login-log",
+                "GET /api/admin/login-log/page", "Tickets", 92);
+        addMenuIfAbsent(14L, 11L, "system:menu", "菜单管理", "MENU", "/admin/menu",
+                "GET /api/admin/menu/**", "Menu", 93);
+        addMenuIfAbsent(41L, 14L, "system:menu:save", "保存菜单配置", "BUTTON", null,
+                "PUT /api/admin/menu/**", null, 931);
+
+        initRoleMenus("ADMIN", "dashboard", "parrot:list", "parrot:species", "care:health",
+                "care:feeding", "care:training", "appointment", "notice", "system:user",
+                "system:login-log", "system:menu",
+                "parrot:list:add", "parrot:list:edit", "parrot:list:delete",
+                "parrot:species:add", "parrot:species:edit", "parrot:species:delete",
+                "care:health:add", "care:health:edit", "care:health:delete",
+                "care:feeding:add", "care:feeding:edit", "care:feeding:delete",
+                "care:training:add", "care:training:edit", "care:training:delete",
+                "appointment:confirm", "appointment:reject", "appointment:finish", "appointment:cancel",
+                "notice:add", "notice:edit", "notice:delete",
+                "system:user:add", "system:user:edit", "system:user:disable", "system:user:reset",
+                "system:menu:save");
+        initRoleMenus("KEEPER", "dashboard", "parrot:list", "care:health", "care:feeding",
+                "care:training", "appointment", "notice",
+                "care:health:add", "care:health:edit",
+                "care:feeding:add", "care:feeding:edit",
+                "care:training:add", "care:training:edit",
+                "appointment:confirm", "appointment:finish",
+                "notice:add", "notice:edit");
+    }
+
+    private void addMenuIfAbsent(Long id, Long parentId, String code, String name, String type,
+                                 String path, String apiPattern, String icon, Integer sortNo) {
+        SysMenu old = findMenu(code);
+        if (old != null) {
+            old.setParentId(parentId);
+            old.setMenuName(name);
+            old.setMenuType(type);
+            old.setPath(path);
+            old.setApiPattern(apiPattern);
+            old.setIcon(icon);
+            old.setSortNo(sortNo);
+            old.setStatus(1);
+            menuMapper.updateById(old);
+            return;
+        }
+        SysMenu menu = new SysMenu();
+        menu.setId(id);
+        menu.setParentId(parentId);
+        menu.setMenuCode(code);
+        menu.setMenuName(name);
+        menu.setMenuType(type);
+        menu.setPath(path);
+        menu.setApiPattern(apiPattern);
+        menu.setIcon(icon);
+        menu.setSortNo(sortNo);
+        menu.setStatus(1);
+        menuMapper.insert(menu);
+    }
+
+    private void initRoleMenus(String role, String... menuCodes) {
+        for (String code : menuCodes) {
+            SysMenu menu = findMenu(code);
+            if (menu == null) {
+                continue;
+            }
+            Long count = roleMenuMapper.selectCount(new LambdaQueryWrapper<SysRoleMenu>()
+                    .eq(SysRoleMenu::getRole, role)
+                    .eq(SysRoleMenu::getMenuId, menu.getId()));
+            if (count != null && count > 0) {
+                continue;
+            }
+            SysRoleMenu roleMenu = new SysRoleMenu();
+            roleMenu.setRole(role);
+            roleMenu.setMenuId(menu.getId());
+            roleMenuMapper.insert(roleMenu);
+        }
     }
 
     private void initBusinessDemoData() {
@@ -321,6 +486,12 @@ public class DataInitializer implements CommandLineRunner {
     private Parrot findParrot(String code) {
         return parrotMapper.selectOne(new LambdaQueryWrapper<Parrot>()
                 .eq(Parrot::getCode, code)
+                .last("limit 1"));
+    }
+
+    private SysMenu findMenu(String code) {
+        return menuMapper.selectOne(new LambdaQueryWrapper<SysMenu>()
+                .eq(SysMenu::getMenuCode, code)
                 .last("limit 1"));
     }
 

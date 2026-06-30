@@ -28,7 +28,7 @@
       @size-change="changeSize"
     >
       <template #toolbar>
-        <el-button v-if="adminRole" type="primary" :icon="Plus" @click="openAdd">新增品种</el-button>
+        <el-button v-if="canDo('parrot:species:add')" type="primary" :icon="Plus" @click="openAdd">新增品种</el-button>
       </template>
       <el-table v-loading="loading" :data="list" row-key="id">
         <el-table-column label="图片" width="90">
@@ -46,10 +46,16 @@
         <el-table-column label="状态" min-width="90">
           <template #default="{ row }"><StatusTag :text="row.status === 1 ? '启用' : '禁用'" /></template>
         </el-table-column>
-        <el-table-column v-if="adminRole" label="操作" width="160" fixed="right">
+        <el-table-column v-if="canDo('parrot:species:edit') || canDo('parrot:species:delete')" label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button size="small" :icon="Edit" @click="openEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" :icon="Delete" @click="remove(row)">删除</el-button>
+            <div class="table-actions">
+              <el-tooltip v-if="canDo('parrot:species:edit')" content="编辑" placement="top">
+                <el-button circle size="small" :icon="Edit" @click="openEdit(row)" />
+              </el-tooltip>
+              <el-tooltip v-if="canDo('parrot:species:delete')" content="删除" placement="top">
+                <el-button circle size="small" type="danger" :icon="Delete" @click="remove(row)" />
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -94,7 +100,7 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="saving" @click="submit">保存</el-button>
+        <el-button v-if="canSave" type="primary" :loading="saving" @click="submit">保存</el-button>
       </template>
     </el-dialog>
   </div>
@@ -109,10 +115,9 @@ import StatusTag from '../../components/StatusTag.vue'
 import ImageUpload from '../../components/ImageUpload.vue'
 import { addSpecies, deleteSpecies, getSpeciesPage, updateSpecies } from '../../api/species'
 import { useUserStore } from '../../store/user'
-import { isAdmin } from '../../utils/auth'
+import { hasAction } from '../../utils/auth'
 
 const userStore = useUserStore()
-const adminRole = computed(() => isAdmin(userStore.role))
 const loading = ref(false)
 const saving = ref(false)
 const dialogVisible = ref(false)
@@ -131,6 +136,12 @@ const form = reactive(defaultForm())
 const rules = {
   name: [{ required: true, message: '请输入品种名称', trigger: 'blur' }],
   status: [{ required: true, message: '请选择状态', trigger: 'change' }]
+}
+
+const canSave = computed(() => form.id ? canDo('parrot:species:edit') : canDo('parrot:species:add'))
+
+function canDo(code) {
+  return hasAction(userStore, code)
 }
 
 function defaultForm() {

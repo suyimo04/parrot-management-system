@@ -18,6 +18,15 @@ export function canVisitAdminOnly(role) {
   return isAdmin(role)
 }
 
+export function hasMenu(userStore, code) {
+  if (!code) return true
+  return (userStore.menuCodes || []).includes(code)
+}
+
+export function hasAction(userStore, code) {
+  return hasMenu(userStore, code)
+}
+
 export function canShowButton(role, code) {
   if (code === 'adminOnly') return isAdmin(role)
   if (code === 'keeperOrAdmin') return canVisitAdmin(role)

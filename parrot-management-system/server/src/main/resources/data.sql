@@ -1,7 +1,65 @@
-USE parrot_management;
+﻿USE parrot_management;
 
 SET NAMES utf8mb4;
 
+INSERT INTO sys_menu
+(id, parent_id, menu_code, menu_name, menu_type, path, api_pattern, icon, sort_no, status)
+VALUES
+(1, 0, 'dashboard', '首页看板', 'MENU', '/admin/dashboard', 'GET /api/admin/dashboard/**', 'DataBoard', 10, 1),
+(2, 0, 'parrot', '鹦鹉管理', 'DIR', NULL, NULL, 'Star', 20, 1),
+(3, 2, 'parrot:list', '鹦鹉档案管理', 'MENU', '/admin/parrot/list', 'GET /api/admin/parrot/page,GET /api/admin/species/list', 'Star', 21, 1),
+(4, 2, 'parrot:species', '品种管理', 'MENU', '/admin/parrot/species', 'GET /api/admin/species/page,GET /api/admin/species/list', 'Collection', 22, 1),
+(5, 0, 'care', '养护管理', 'DIR', NULL, NULL, 'FirstAidKit', 30, 1),
+(6, 5, 'care:health', '健康记录管理', 'MENU', '/admin/health', 'GET /api/admin/health-record/page,GET /api/admin/parrot/page', 'FirstAidKit', 31, 1),
+(7, 5, 'care:feeding', '喂养记录管理', 'MENU', '/admin/feeding', 'GET /api/admin/feeding-record/page,GET /api/admin/parrot/page', 'Bowl', 32, 1),
+(8, 5, 'care:training', '训练记录管理', 'MENU', '/admin/training', 'GET /api/admin/training-record/page,GET /api/admin/parrot/page', 'Medal', 33, 1),
+(9, 0, 'appointment', '预约咨询管理', 'MENU', '/admin/appointment', 'GET /api/admin/appointment/page,GET /api/admin/parrot/page', 'Calendar', 40, 1),
+(10, 0, 'notice', '公告知识管理', 'MENU', '/admin/notice', 'GET /api/admin/notice/page', 'Document', 50, 1),
+(11, 0, 'system', '系统管理', 'DIR', NULL, NULL, 'Setting', 90, 1),
+(12, 11, 'system:user', '用户管理', 'MENU', '/admin/user', 'GET /api/admin/user/page', 'User', 91, 1),
+(13, 11, 'system:login-log', '登录日志', 'MENU', '/admin/login-log', 'GET /api/admin/login-log/page', 'Tickets', 92, 1),
+(14, 11, 'system:menu', '菜单管理', 'MENU', '/admin/menu', 'GET /api/admin/menu/**', 'Menu', 93, 1),
+(15, 3, 'parrot:list:add', '新增鹦鹉', 'BUTTON', NULL, 'POST /api/admin/parrot', NULL, 211, 1),
+(16, 3, 'parrot:list:edit', '编辑鹦鹉', 'BUTTON', NULL, 'PUT /api/admin/parrot/**', NULL, 212, 1),
+(17, 3, 'parrot:list:delete', '删除鹦鹉', 'BUTTON', NULL, 'DELETE /api/admin/parrot/**', NULL, 213, 1),
+(18, 4, 'parrot:species:add', '新增品种', 'BUTTON', NULL, 'POST /api/admin/species', NULL, 221, 1),
+(19, 4, 'parrot:species:edit', '编辑品种', 'BUTTON', NULL, 'PUT /api/admin/species/**', NULL, 222, 1),
+(20, 4, 'parrot:species:delete', '删除品种', 'BUTTON', NULL, 'DELETE /api/admin/species/**', NULL, 223, 1),
+(21, 6, 'care:health:add', '新增健康记录', 'BUTTON', NULL, 'POST /api/admin/health-record', NULL, 311, 1),
+(22, 6, 'care:health:edit', '编辑健康记录', 'BUTTON', NULL, 'PUT /api/admin/health-record/**', NULL, 312, 1),
+(23, 6, 'care:health:delete', '删除健康记录', 'BUTTON', NULL, 'DELETE /api/admin/health-record/**', NULL, 313, 1),
+(24, 7, 'care:feeding:add', '新增喂养记录', 'BUTTON', NULL, 'POST /api/admin/feeding-record', NULL, 321, 1),
+(25, 7, 'care:feeding:edit', '编辑喂养记录', 'BUTTON', NULL, 'PUT /api/admin/feeding-record/**', NULL, 322, 1),
+(26, 7, 'care:feeding:delete', '删除喂养记录', 'BUTTON', NULL, 'DELETE /api/admin/feeding-record/**', NULL, 323, 1),
+(27, 8, 'care:training:add', '新增训练记录', 'BUTTON', NULL, 'POST /api/admin/training-record', NULL, 331, 1),
+(28, 8, 'care:training:edit', '编辑训练记录', 'BUTTON', NULL, 'PUT /api/admin/training-record/**', NULL, 332, 1),
+(29, 8, 'care:training:delete', '删除训练记录', 'BUTTON', NULL, 'DELETE /api/admin/training-record/**', NULL, 333, 1),
+(30, 9, 'appointment:confirm', '确认预约', 'BUTTON', NULL, 'PUT /api/admin/appointment/*/confirm', NULL, 401, 1),
+(31, 9, 'appointment:reject', '驳回预约', 'BUTTON', NULL, 'PUT /api/admin/appointment/*/reject', NULL, 402, 1),
+(32, 9, 'appointment:finish', '完成预约', 'BUTTON', NULL, 'PUT /api/admin/appointment/*/complete,PUT /api/admin/appointment/*/finish', NULL, 403, 1),
+(33, 9, 'appointment:cancel', '取消预约', 'BUTTON', NULL, 'PUT /api/admin/appointment/*/cancel', NULL, 404, 1),
+(34, 10, 'notice:add', '新增公告', 'BUTTON', NULL, 'POST /api/admin/notice', NULL, 501, 1),
+(35, 10, 'notice:edit', '编辑公告', 'BUTTON', NULL, 'PUT /api/admin/notice/**', NULL, 502, 1),
+(36, 10, 'notice:delete', '删除公告', 'BUTTON', NULL, 'DELETE /api/admin/notice/**', NULL, 503, 1),
+(37, 12, 'system:user:add', '新增用户', 'BUTTON', NULL, 'POST /api/admin/user', NULL, 911, 1),
+(38, 12, 'system:user:edit', '编辑用户', 'BUTTON', NULL, 'PUT /api/admin/user/*', NULL, 912, 1),
+(39, 12, 'system:user:disable', '禁用用户', 'BUTTON', NULL, 'DELETE /api/admin/user/**', NULL, 913, 1),
+(40, 12, 'system:user:reset', '重置密码', 'BUTTON', NULL, 'PUT /api/admin/user/*/reset-password', NULL, 914, 1),
+(41, 14, 'system:menu:save', '保存菜单配置', 'BUTTON', NULL, 'PUT /api/admin/menu/**', NULL, 931, 1);
+
+INSERT INTO sys_role_menu (role, menu_id)
+VALUES
+('ADMIN', 1), ('ADMIN', 3), ('ADMIN', 4), ('ADMIN', 6), ('ADMIN', 7),
+('ADMIN', 8), ('ADMIN', 9), ('ADMIN', 10), ('ADMIN', 12), ('ADMIN', 13), ('ADMIN', 14),
+('ADMIN', 15), ('ADMIN', 16), ('ADMIN', 17), ('ADMIN', 18), ('ADMIN', 19), ('ADMIN', 20),
+('ADMIN', 21), ('ADMIN', 22), ('ADMIN', 23), ('ADMIN', 24), ('ADMIN', 25), ('ADMIN', 26),
+('ADMIN', 27), ('ADMIN', 28), ('ADMIN', 29), ('ADMIN', 30), ('ADMIN', 31), ('ADMIN', 32), ('ADMIN', 33),
+('ADMIN', 34), ('ADMIN', 35), ('ADMIN', 36), ('ADMIN', 37), ('ADMIN', 38), ('ADMIN', 39), ('ADMIN', 40), ('ADMIN', 41),
+('KEEPER', 1), ('KEEPER', 3), ('KEEPER', 6), ('KEEPER', 7),
+('KEEPER', 8), ('KEEPER', 9), ('KEEPER', 10),
+('KEEPER', 21), ('KEEPER', 22), ('KEEPER', 24), ('KEEPER', 25),
+('KEEPER', 27), ('KEEPER', 28), ('KEEPER', 30), ('KEEPER', 32),
+('KEEPER', 34), ('KEEPER', 35);
 INSERT INTO parrot_species
 (id, name, english_name, origin, size, avg_lifespan, habits, difficulty, image, status, create_time, update_time)
 VALUES
@@ -44,3 +102,4 @@ VALUES
 (1, '园区开放预约咨询服务', '园区已开放鹦鹉预约咨询服务，客户可在前台选择感兴趣的鹦鹉并提交咨询预约。工作人员会在后台统一处理。', '系统公告', '/upload/demo/notice-open.jpg', '已发布', NOW(), NULL, NOW(), NOW()),
 (2, '换羽期的基础照护建议', '换羽期要保持环境安静，注意补充新鲜蔬果和干净饮水。若出现精神差、食欲明显下降等情况，应及时记录并安排复查。', '饲养知识', '/upload/demo/notice-care.jpg', '已发布', NOW(), NULL, NOW(), NOW()),
 (3, '后台演示用未发布公告', '这条公告用于后台发布状态演示，前台公开列表中不应该显示。', '系统公告', NULL, '未发布', NULL, NULL, NOW(), NOW());
+

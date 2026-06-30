@@ -35,7 +35,7 @@
       @size-change="changeSize"
     >
       <template #toolbar>
-        <el-button type="primary" :icon="Plus" @click="openAdd">新增用户</el-button>
+        <el-button v-if="canDo('system:user:add')" type="primary" :icon="Plus" @click="openAdd">新增用户</el-button>
       </template>
       <el-table v-loading="loading" :data="list" row-key="id">
         <el-table-column prop="username" label="用户名" min-width="120" />
@@ -49,11 +49,19 @@
           <template #default="{ row }"><StatusTag :text="row.status === 1 ? '启用' : '禁用'" /></template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="170" />
-        <el-table-column label="操作" width="250" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button size="small" :icon="Edit" @click="openEdit(row)">编辑</el-button>
-            <el-button size="small" type="warning" :icon="RefreshLeft" @click="resetPassword(row)">重置密码</el-button>
-            <el-button size="small" type="danger" :icon="Delete" :disabled="row.status === 0" @click="disable(row)">禁用</el-button>
+            <div class="table-actions">
+              <el-tooltip v-if="canDo('system:user:edit')" content="编辑" placement="top">
+                <el-button circle size="small" :icon="Edit" @click="openEdit(row)" />
+              </el-tooltip>
+              <el-tooltip v-if="canDo('system:user:reset')" content="重置密码" placement="top">
+                <el-button circle size="small" type="warning" :icon="RefreshLeft" @click="resetPassword(row)" />
+              </el-tooltip>
+              <el-tooltip v-if="canDo('system:user:disable')" content="禁用" placement="top">
+                <el-button circle size="small" type="danger" :icon="Delete" :disabled="row.status === 0" @click="disable(row)" />
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -92,20 +100,23 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="saving" @click="submit">保存</el-button>
+        <el-button v-if="canSave" type="primary" :loading="saving" @click="submit">保存</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Edit, Plus, RefreshLeft, Search } from '@element-plus/icons-vue'
 import PageTable from '../../components/PageTable.vue'
 import StatusTag from '../../components/StatusTag.vue'
 import { addUser, disableUser, getUserPage, resetUserPassword, updateUser } from '../../api/user'
+import { useUserStore } from '../../store/user'
+import { hasAction } from '../../utils/auth'
 
+const userStore = useUserStore()
 const loading = ref(false)
 const saving = ref(false)
 const dialogVisible = ref(false)
@@ -128,6 +139,12 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   role: [{ required: true, message: '请选择角色', trigger: 'change' }],
   status: [{ required: true, message: '请选择状态', trigger: 'change' }]
+}
+
+const canSave = computed(() => form.id ? canDo('system:user:edit') : canDo('system:user:add'))
+
+function canDo(code) {
+  return hasAction(userStore, code)
 }
 
 function defaultForm() {

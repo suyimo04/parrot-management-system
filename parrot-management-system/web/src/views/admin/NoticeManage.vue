@@ -34,7 +34,7 @@
       @size-change="changeSize"
     >
       <template #toolbar>
-        <el-button type="primary" :icon="Plus" @click="openAdd">新增公告</el-button>
+        <el-button v-if="canDo('notice:add')" type="primary" :icon="Plus" @click="openAdd">新增公告</el-button>
       </template>
       <el-table v-loading="loading" :data="list" row-key="id">
         <el-table-column label="封面" width="90">
@@ -51,10 +51,16 @@
         <el-table-column prop="publishTime" label="发布时间" min-width="170" />
         <el-table-column prop="createTime" label="创建时间" min-width="170" />
         <el-table-column prop="creatorName" label="创建人" min-width="110" />
-        <el-table-column label="操作" width="170" fixed="right">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button size="small" :icon="Edit" @click="openEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" :icon="Delete" @click="remove(row)">删除</el-button>
+            <div class="table-actions">
+              <el-tooltip v-if="canDo('notice:edit')" content="编辑" placement="top">
+                <el-button circle size="small" :icon="Edit" @click="openEdit(row)" />
+              </el-tooltip>
+              <el-tooltip v-if="canDo('notice:delete')" content="删除" placement="top">
+                <el-button circle size="small" type="danger" :icon="Delete" @click="remove(row)" />
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -86,21 +92,24 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="saving" @click="submit">保存</el-button>
+        <el-button v-if="canSave" type="primary" :loading="saving" @click="submit">保存</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Edit, Plus, Search } from '@element-plus/icons-vue'
 import PageTable from '../../components/PageTable.vue'
 import StatusTag from '../../components/StatusTag.vue'
 import ImageUpload from '../../components/ImageUpload.vue'
 import { addNotice, deleteNotice, getNoticePage, updateNotice } from '../../api/notice'
+import { useUserStore } from '../../store/user'
+import { hasAction } from '../../utils/auth'
 
+const userStore = useUserStore()
 const loading = ref(false)
 const saving = ref(false)
 const dialogVisible = ref(false)
@@ -122,6 +131,12 @@ const rules = {
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
   publishStatus: [{ required: true, message: '请选择发布状态', trigger: 'change' }],
   content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
+}
+
+const canSave = computed(() => form.id ? canDo('notice:edit') : canDo('notice:add'))
+
+function canDo(code) {
+  return hasAction(userStore, code)
 }
 
 function defaultForm() {

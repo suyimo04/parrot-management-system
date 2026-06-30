@@ -53,13 +53,25 @@
         </el-table-column>
         <el-table-column prop="handlerName" label="处理人" min-width="110" />
         <el-table-column prop="handleTime" label="处理时间" min-width="170" />
-        <el-table-column label="操作" width="300" fixed="right">
+        <el-table-column label="操作" width="260" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button size="small" :icon="View" @click="openDetail(row)">详情</el-button>
-            <el-button v-if="row.status === '待处理'" size="small" type="success" @click="confirmRow(row)">确认</el-button>
-            <el-button v-if="row.status === '待处理'" size="small" type="danger" @click="openHandle(row, 'reject')">驳回</el-button>
-            <el-button v-if="row.status === '已确认'" size="small" type="primary" @click="openHandle(row, 'finish')">完成</el-button>
-            <el-button v-if="canCancel(row.status)" size="small" type="warning" @click="openHandle(row, 'cancel')">取消</el-button>
+            <div class="table-actions table-actions--wide">
+              <el-tooltip content="详情" placement="top">
+                <el-button circle size="small" :icon="View" @click="openDetail(row)" />
+              </el-tooltip>
+              <el-tooltip v-if="row.status === '待处理' && canDo('appointment:confirm')" content="确认" placement="top">
+                <el-button circle size="small" type="success" :icon="Check" @click="confirmRow(row)" />
+              </el-tooltip>
+              <el-tooltip v-if="row.status === '待处理' && canDo('appointment:reject')" content="驳回" placement="top">
+                <el-button circle size="small" type="danger" :icon="Close" @click="openHandle(row, 'reject')" />
+              </el-tooltip>
+              <el-tooltip v-if="row.status === '已确认' && canDo('appointment:finish')" content="完成" placement="top">
+                <el-button circle size="small" type="primary" :icon="Select" @click="openHandle(row, 'finish')" />
+              </el-tooltip>
+              <el-tooltip v-if="canCancel(row.status) && canDo('appointment:cancel')" content="取消" placement="top">
+                <el-button circle size="small" type="warning" :icon="Remove" @click="openHandle(row, 'cancel')" />
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -101,7 +113,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, View } from '@element-plus/icons-vue'
+import { Check, Close, Remove, Search, Select, View } from '@element-plus/icons-vue'
 import PageTable from '../../components/PageTable.vue'
 import StatusTag from '../../components/StatusTag.vue'
 import {
@@ -112,7 +124,10 @@ import {
   rejectAppointment
 } from '../../api/appointment'
 import { getParrotPage } from '../../api/parrot'
+import { useUserStore } from '../../store/user'
+import { hasAction } from '../../utils/auth'
 
+const userStore = useUserStore()
 const statusOptions = ['待处理', '已确认', '已完成', '已取消', '已驳回']
 const loading = ref(false)
 const saving = ref(false)
@@ -253,6 +268,10 @@ async function submitHandle() {
 
 function canCancel(status) {
   return status === '待处理' || status === '已确认'
+}
+
+function canDo(code) {
+  return hasAction(userStore, code)
 }
 
 function resetHandleForm() {

@@ -5,6 +5,7 @@ import com.parrot.common.CurrentUser;
 import com.parrot.common.CurrentUserContext;
 import com.parrot.common.JwtUtils;
 import com.parrot.common.ResultCode;
+import com.parrot.service.MenuService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -21,12 +22,18 @@ import java.util.Set;
 public class JwtInterceptor implements HandlerInterceptor {
 
     private static final String TOKEN_PREFIX = "Bearer ";
-    private static final Set<String> ADMIN_ONLY = Set.of("/api/admin/user/**", "/api/admin/login-log/**");
+    private static final Set<String> ADMIN_ONLY = Set.of(
+            "/api/admin/user/**",
+            "/api/admin/login-log/**",
+            "/api/admin/menu/**"
+    );
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private final JwtUtils jwtUtils;
+    private final MenuService menuService;
 
-    public JwtInterceptor(JwtUtils jwtUtils) {
+    public JwtInterceptor(JwtUtils jwtUtils, MenuService menuService) {
         this.jwtUtils = jwtUtils;
+        this.menuService = menuService;
     }
 
     @Override
@@ -37,7 +44,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 
         String token = readToken(request);
         CurrentUser user = jwtUtils.parseToken(token);
-        checkPermission(request.getRequestURI(), user);
+        checkPermission(request.getMethod(), request.getRequestURI(), user);
         CurrentUserContext.set(user);
         return true;
     }
@@ -59,9 +66,15 @@ public class JwtInterceptor implements HandlerInterceptor {
         return token;
     }
 
-    private void checkPermission(String uri, CurrentUser user) {
+    private void checkPermission(String method, String uri, CurrentUser user) {
         String role = user.getRole();
         if (match(uri, "/api/common/upload")) {
+            return;
+        }
+        if (match(uri, "/api/admin/menu/current")) {
+            if (!"ADMIN".equals(role) && !"KEEPER".equals(role)) {
+                throw new AuthException(ResultCode.FORBIDDEN, "无权限访问后台接口");
+            }
             return;
         }
         if (match(uri, "/api/admin/**")) {
@@ -70,6 +83,9 @@ public class JwtInterceptor implements HandlerInterceptor {
             }
             if (isAdminOnly(uri) && !"ADMIN".equals(role)) {
                 throw new AuthException(ResultCode.FORBIDDEN, "该功能仅管理员可用");
+            }
+            if (!menuService.canAccessApi(method, uri, user.getUserId(), role)) {
+                throw new AuthException(ResultCode.FORBIDDEN, "当前账号没有该菜单权限");
             }
             return;
         }
